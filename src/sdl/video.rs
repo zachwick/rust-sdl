@@ -13,7 +13,7 @@ pub mod ll {
 
     use Rect;
 
-    use libc::{c_void, c_uint, c_int, c_float, c_uchar, uint8_t, uint16_t};
+    use libc::{c_void, c_uint, c_int, c_float, uint8_t, uint16_t};
     use libc::{uint32_t, int32_t};
     use libc::types::os::arch::c95::c_schar;
 
@@ -24,8 +24,7 @@ pub mod ll {
         pub read: *uint8_t,
         pub write: *uint8_t,
         pub close: *uint8_t,
-        pub _type: uint32_t,
-        hidden: [c_uchar, ..24]
+        pub _type: uint32_t
     }
 
     pub struct SDL_Surface {
