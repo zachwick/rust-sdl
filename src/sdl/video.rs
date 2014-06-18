@@ -528,7 +528,6 @@ impl Surface {
         }
     }
 
-    #[allow(deprecated_owned_vector)]
     pub fn set_colors(&self, colors: &[Color]) -> bool {
         let colors: Vec<_> = colors.iter().map(|color| {
             color.to_struct()
@@ -538,7 +537,6 @@ impl Surface {
                                    colors.len() as c_int) == 1 }
     }
 
-    #[allow(deprecated_owned_vector)]
     pub fn set_palette(&self, palettes: &[PaletteType],
                    colors: &[Color]) -> bool {
         let colors: Vec<_> = colors.iter().map(|color| {
