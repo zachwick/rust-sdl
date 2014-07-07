@@ -112,80 +112,80 @@ pub mod ll {
     pub struct SDL_UserEvent {
         pub _type: uint8_t,
         pub code: c_int,
-        pub data1: *c_void,
-        pub data2: *c_void,
+        pub data1: *mut c_void,
+        pub data2: *mut c_void,
     }
 
     pub struct SDL_SysWMEvent {
         pub _type: uint8_t,
-        pub msg: *SDL_SysWMmsg,
+        pub msg: *mut SDL_SysWMmsg,
     }
 
     impl SDL_Event {
-        pub fn _type(&self) -> *uint8_t {
+        pub fn _type(&self) -> *const uint8_t {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn active(&self) -> *SDL_ActiveEvent {
+        pub fn active(&self) -> *const SDL_ActiveEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn key(&self) -> *SDL_KeyboardEvent {
+        pub fn key(&self) -> *const SDL_KeyboardEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn motion(&self) -> *SDL_MouseMotionEvent {
+        pub fn motion(&self) -> *const SDL_MouseMotionEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn button(&self) -> *SDL_MouseButtonEvent {
+        pub fn button(&self) -> *const SDL_MouseButtonEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jaxis(&self) -> *SDL_JoyAxisEvent {
+        pub fn jaxis(&self) -> *const SDL_JoyAxisEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jball(&self) -> *SDL_JoyBallEvent {
+        pub fn jball(&self) -> *const SDL_JoyBallEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jhat(&self) -> *SDL_JoyHatEvent {
+        pub fn jhat(&self) -> *const SDL_JoyHatEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn jbutton(&self) -> *SDL_JoyButtonEvent {
+        pub fn jbutton(&self) -> *const SDL_JoyButtonEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn resize(&self) -> *SDL_ResizeEvent {
+        pub fn resize(&self) -> *const SDL_ResizeEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn expose(&self) -> *SDL_ExposeEvent {
+        pub fn expose(&self) -> *const SDL_ExposeEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn quit(&self) -> *SDL_QuitEvent {
+        pub fn quit(&self) -> *const SDL_QuitEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn user(&self) -> *SDL_UserEvent {
+        pub fn user(&self) -> *const SDL_UserEvent {
             unsafe { mem::transmute_copy(&self) }
         }
 
-        pub fn syswm(&self) -> *SDL_SysWMEvent {
+        pub fn syswm(&self) -> *const SDL_SysWMEvent {
             unsafe { mem::transmute_copy(&self) }
         }
     }
 
     extern "C" {
-        pub fn SDL_PollEvent(event: *SDL_Event) -> c_int;
-        pub fn SDL_WaitEvent(event: *SDL_Event) -> c_int;
+        pub fn SDL_PollEvent(event: *mut SDL_Event) -> c_int;
+        pub fn SDL_WaitEvent(event: *mut SDL_Event) -> c_int;
         pub fn SDL_EventState(_type: uint8_t, state: c_int) -> uint8_t;
-        pub fn SDL_GetKeyState(numkeys: *c_int) -> *uint8_t;
+        pub fn SDL_GetKeyState(numkeys: *mut c_int) -> *mut uint8_t;
         pub fn SDL_GetModState() -> SDLMod;
-        pub fn SDL_GetKeyName(key: SDLKey) -> *c_schar;
+        pub fn SDL_GetKeyName(key: SDLKey) -> *mut c_schar;
         pub fn SDL_JoystickEventState(state: c_int) -> c_int;
         pub fn SDL_GetAppState() -> uint8_t;
         pub fn SDL_EnableUNICODE(enable: c_int) -> c_int;
@@ -722,8 +722,8 @@ pub fn pump_events() {
 // TODO: peep_events (a tricky one but doable)
 
 pub fn wait_event() -> Event {
-    let raw = null_event();
-    let success = unsafe { ll::SDL_WaitEvent(&raw)
+    let mut raw = null_event();
+    let success = unsafe { ll::SDL_WaitEvent(&mut raw)
                             == 1 as c_int };
 
     if success { wrap_event(raw) }
@@ -733,8 +733,8 @@ pub fn wait_event() -> Event {
 pub fn poll_event() -> Event {
     pump_events();
 
-    let raw = null_event();
-    let have = unsafe { ll::SDL_PollEvent(&raw) };
+    let mut raw = null_event();
+    let have = unsafe { ll::SDL_PollEvent(&mut raw) };
 
     if have != 1 {
         return NoEvent;
@@ -755,12 +755,12 @@ pub fn get_event_state(ty: EventType) -> bool {
 }
 
 pub fn get_key_state() -> Vec<(Key, bool)> {
-    let num = 0;
-    let data = unsafe { ll::SDL_GetKeyState(&num) };
-    let mut i = -1;
+    let mut num = 0;
+    let data = unsafe { ll::SDL_GetKeyState(&mut num) };
+    let mut i = -1i;
 
     unsafe {
-        slice::raw::buf_as_slice(data, num as uint, |buf| {
+        slice::raw::buf_as_slice(data as *const u8, num as uint, |buf| {
             buf.iter().filter_map(|&state| {
                 i += 1;
 

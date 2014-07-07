@@ -1,13 +1,12 @@
-#![crate_id="sdl_image#0.3.3"]
+#![crate_name = "sdl_image"]
 #![comment = "SDL_image binding"]
 #![license = "MIT"]
 #![crate_type = "lib"]
 
 extern crate libc;
-extern crate sdl = "sdl#0.3.3";
+extern crate sdl;
 
 use libc::c_int;
-use std::ptr;
 
 use sdl::get_error;
 use sdl::video::Surface;
@@ -40,7 +39,7 @@ pub mod ll {
     extern "C" {
         pub fn IMG_Init(flags: c_int) -> c_int;
         pub fn IMG_Quit();
-        pub fn IMG_Load(file: *c_schar) -> *SDL_Surface;
+        pub fn IMG_Load(file: *const c_schar) -> *mut SDL_Surface;
     }
 }
 
@@ -69,17 +68,16 @@ pub fn init(flags: &[InitFlag]) -> Vec<InitFlag> {
 }
 
 pub fn load(file: &Path) -> Result<Surface, String> {
-    file.to_c_str().with_ref(|file| {
-        unsafe {
-            let raw = ll::IMG_Load(file);
+    let cfile = file.to_c_str();
+    unsafe {
+        let raw = ll::IMG_Load(cfile.as_ptr());
 
-            if raw == ptr::null() {
-                Err(get_error())
-            } else {
-                Ok(Surface { raw: raw, owned: true })
-            }
+        if raw.is_null() {
+            Err(get_error())
+        } else {
+            Ok(Surface { raw: raw, owned: true })
         }
-    })
+    }
 }
 
 pub fn quit() {
