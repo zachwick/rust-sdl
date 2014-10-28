@@ -1,5 +1,5 @@
 use std::mem;
-use std::str;
+use std::string;
 
 // Setup linking for all targets.
 #[cfg(target_os="macos")]
@@ -26,22 +26,22 @@ pub mod ll {
     use libc::types::os::arch::c95::c_schar;
 
     pub type SDL_errorcode = c_uint;
-    pub static SDL_ENOMEM: SDL_errorcode = 0;
-    pub static SDL_EFREAD: SDL_errorcode = 1;
-    pub static SDL_EFWRITE: SDL_errorcode = 2;
-    pub static SDL_EFSEEK: SDL_errorcode = 3;
-    pub static SDL_UNSUPPORTED: SDL_errorcode = 4;
-    pub static SDL_LASTERROR: SDL_errorcode = 5;
+    pub const SDL_ENOMEM: SDL_errorcode = 0;
+    pub const SDL_EFREAD: SDL_errorcode = 1;
+    pub const SDL_EFWRITE: SDL_errorcode = 2;
+    pub const SDL_EFSEEK: SDL_errorcode = 3;
+    pub const SDL_UNSUPPORTED: SDL_errorcode = 4;
+    pub const SDL_LASTERROR: SDL_errorcode = 5;
 
     pub type SDL_InitFlag = uint32_t;
-    pub static SDL_INIT_TIMER: SDL_InitFlag = 0x00000001;
-    pub static SDL_INIT_AUDIO: SDL_InitFlag = 0x00000010;
-    pub static SDL_INIT_VIDEO: SDL_InitFlag = 0x00000020;
-    pub static SDL_INIT_CDROM: SDL_InitFlag = 0x00000100;
-    pub static SDL_INIT_JOYSTICK: SDL_InitFlag = 0x00000200;
-    pub static SDL_INIT_NOPARACHUTE: SDL_InitFlag = 0x00100000;
-    pub static SDL_INIT_EVENTTHREAD: SDL_InitFlag = 0x01000000;
-    pub static SDL_INIT_EVERYTHING: SDL_InitFlag = 0x0000FFFF;
+    pub const SDL_INIT_TIMER: SDL_InitFlag = 0x00000001;
+    pub const SDL_INIT_AUDIO: SDL_InitFlag = 0x00000010;
+    pub const SDL_INIT_VIDEO: SDL_InitFlag = 0x00000020;
+    pub const SDL_INIT_CDROM: SDL_InitFlag = 0x00000100;
+    pub const SDL_INIT_JOYSTICK: SDL_InitFlag = 0x00000200;
+    pub const SDL_INIT_NOPARACHUTE: SDL_InitFlag = 0x00100000;
+    pub const SDL_INIT_EVENTTHREAD: SDL_InitFlag = 0x01000000;
+    pub const SDL_INIT_EVERYTHING: SDL_InitFlag = 0x0000FFFF;
 
     extern "C" {
         pub fn SDL_ClearError();
@@ -58,6 +58,7 @@ pub mod ll {
 }
 
 #[deriving(PartialEq)]
+#[repr(C)]
 pub struct Rect {
     pub x: i16,
     pub y: i16,
@@ -65,7 +66,7 @@ pub struct Rect {
     pub h: u16
 }
 
-#[allow(non_snake_case_functions)]
+#[allow(non_snake_case)]
 pub fn Rect(x: i16, y: i16, w: u16, h: u16) -> Rect {
     Rect { x: x, y: y, w: w, h: h }
 }
@@ -155,7 +156,7 @@ pub fn get_error() -> String {
     unsafe {
         let cstr = ll::SDL_GetError();
 
-        str::raw::from_c_str(mem::transmute_copy(&cstr))
+        string::raw::from_buf(mem::transmute_copy(&cstr))
     }
 }
 

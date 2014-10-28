@@ -14,6 +14,8 @@ pub mod ll {
 	pub static SDL_QUERY: c_int = -1;
 
 	pub type WMcursor = c_void;
+
+    #[repr(C)]
 	pub struct SDL_Cursor {
 	     pub area: Rect,
 	     pub hot_x: int16_t,
@@ -60,8 +62,8 @@ fn wrap_cursor(raw: *mut ll::SDL_Cursor, owned: bool) -> Cursor {
 impl Cursor {
 	pub fn new(data: &[u8], mask: &[u8], w: int, h: int, hot_x: int, hot_y: int)
             -> Result<Cursor, String> {
-        let mut data = Vec::from_slice(data);
-        let mut mask = Vec::from_slice(mask);
+        let mut data = data.to_vec();
+        let mut mask = mask.to_vec();
 		unsafe {
 			let raw = ll::SDL_CreateCursor(data.as_mut_ptr(), mask.as_mut_ptr(),
 				                           w as c_int, h as c_int, hot_x as c_int,

@@ -1,6 +1,6 @@
 use std::mem;
 use libc::c_int;
-use std::str;
+use std::string;
 
 use get_error;
 
@@ -12,12 +12,13 @@ pub mod ll {
 
 	pub type CDstatus = c_int;
 
-	pub static CD_TRAYEMPTY: CDstatus = 0;
-	pub static CD_STOPPED: CDstatus = 1;
-	pub static CD_PLAYING: CDstatus = 2;
-	pub static CD_PAUSED: CDstatus = 3;
-	pub static CD_ERROR: CDstatus = -1;
+	pub const CD_TRAYEMPTY: CDstatus = 0;
+	pub const CD_STOPPED: CDstatus = 1;
+	pub const CD_PLAYING: CDstatus = 2;
+	pub const CD_PAUSED: CDstatus = 3;
+	pub const CD_ERROR: CDstatus = -1;
 
+    #[repr(C)]
 	pub struct SDL_CDtrack {
 	    pub id: uint8_t,
 	    pub _type: uint8_t,
@@ -26,6 +27,7 @@ pub mod ll {
 	    pub offset: uint32_t
 	}
 
+    #[repr(C)]
 	pub struct SDL_CD {
 	    pub id: c_int,
 	    pub status: CDstatus,
@@ -62,7 +64,7 @@ pub fn get_drive_name(index: int) -> String {
 	unsafe {
 		let cstr = ll::SDL_CDName(index as c_int);
 
-		str::raw::from_c_str(mem::transmute_copy(&cstr))
+		string::raw::from_buf(mem::transmute_copy(&cstr))
 	}
 }
 

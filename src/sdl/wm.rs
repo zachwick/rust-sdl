@@ -1,6 +1,6 @@
 use std::mem;
 use std::ptr;
-use std::str;
+use std::string;
 
 use video;
 
@@ -14,10 +14,10 @@ pub mod ll {
 
 	pub type SDL_GrabMode = c_int;
 
-	pub static SDL_GRAB_QUERY: SDL_GrabMode = -1;
-	pub static SDL_GRAB_OFF: SDL_GrabMode = 0;
-	pub static SDL_GRAB_ON: SDL_GrabMode = 1;
-	pub static SDL_GRAB_FULLSCREEN: SDL_GrabMode = 2;
+	pub const SDL_GRAB_QUERY: SDL_GrabMode = -1;
+	pub const SDL_GRAB_OFF: SDL_GrabMode = 0;
+	pub const SDL_GRAB_ON: SDL_GrabMode = 1;
+	pub const SDL_GRAB_FULLSCREEN: SDL_GrabMode = 2;
 
     extern "C" {
         pub fn SDL_WM_SetCaption(title: *const c_schar, icon: *const c_schar);
@@ -41,20 +41,20 @@ pub fn set_caption(title: &str, icon: &str) {
 }
 
 pub fn get_caption() -> (String, String) {
-	let mut title_buf = ptr::mut_null();
-	let mut icon_buf = ptr::mut_null();
+	let mut title_buf = ptr::null_mut();
+	let mut icon_buf = ptr::null_mut();
 
 	unsafe {
 		ll::SDL_WM_GetCaption(&mut title_buf,
 			                  &mut icon_buf);
 
-        (str::raw::from_c_str(mem::transmute_copy(&title_buf)),
-         str::raw::from_c_str(mem::transmute_copy(&icon_buf)))
+        (string::raw::from_buf(mem::transmute_copy(&title_buf)),
+         string::raw::from_buf(mem::transmute_copy(&icon_buf)))
     }
 }
 
 pub fn set_icon(surface: video::Surface) {
-	unsafe { ll::SDL_WM_SetIcon(surface.raw, ptr::mut_null()); }
+	unsafe { ll::SDL_WM_SetIcon(surface.raw, ptr::null_mut()); }
 }
 
 pub fn iconify_window() {

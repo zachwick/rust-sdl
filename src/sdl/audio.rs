@@ -4,22 +4,23 @@ use self::ll::{SDL_UnlockAudio};
 
 use std::mem::{forget, transmute};
 use libc::{c_int, c_void, uint16_t};
-use std::ptr::mut_null;
+use std::ptr::null_mut;
 
 pub mod ll {
     #![allow(non_camel_case_types)]
 
     use libc::{c_int, c_void, uint16_t};
 
-    pub static AUDIO_U8: uint16_t = 0x0008;
-    pub static AUDIO_S8: uint16_t = 0x8008;
-    pub static AUDIO_U16LSB: uint16_t = 0x0010;
-    pub static AUDIO_S16LSB: uint16_t = 0x8010;
-    pub static AUDIO_U16MSB: uint16_t = 0x1010;
-    pub static AUDIO_S16MSB: uint16_t = 0x9010;
-    pub static AUDIO_U16: uint16_t = AUDIO_U16LSB;
-    pub static AUDIO_S16: uint16_t = AUDIO_S16LSB;
+    pub const AUDIO_U8: uint16_t = 0x0008;
+    pub const AUDIO_S8: uint16_t = 0x8008;
+    pub const AUDIO_U16LSB: uint16_t = 0x0010;
+    pub const AUDIO_S16LSB: uint16_t = 0x8010;
+    pub const AUDIO_U16MSB: uint16_t = 0x1010;
+    pub const AUDIO_S16MSB: uint16_t = 0x9010;
+    pub const AUDIO_U16: uint16_t = AUDIO_U16LSB;
+    pub const AUDIO_S16: uint16_t = AUDIO_S16LSB;
 
+    #[repr(C)]
     pub struct SDL_AudioSpec {
         pub freq: c_int,
         pub format: u16,
@@ -161,8 +162,8 @@ pub fn open(desired: DesiredAudioSpec) -> Result<ObtainedAudioSpec,()> {
             samples: 0,
             padding: 0,
             size: 0,
-            callback: mut_null(),
-            userdata: mut_null(),
+            callback: null_mut(),
+            userdata: null_mut(),
         };
 
         if SDL_OpenAudio(&mut ll_desired, &mut ll_obtained) < 0 {

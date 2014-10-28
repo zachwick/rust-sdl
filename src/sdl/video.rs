@@ -19,6 +19,7 @@ pub mod ll {
 
     pub type SDL_Rect = Rect;
 
+    #[repr(C)]
     pub struct SDL_RWops {
         pub seek: *mut uint8_t,
         pub read: *mut uint8_t,
@@ -28,6 +29,7 @@ pub mod ll {
         _hidden: [c_uchar, ..24]
     }
 
+    #[repr(C)]
     pub struct SDL_Surface {
         pub flags: uint32_t,
         pub format: *mut SDL_PixelFormat,
@@ -45,6 +47,7 @@ pub mod ll {
         pub refcount: c_int
     }
 
+    #[repr(C)]
     pub struct SDL_Color {
         pub r: uint8_t,
         pub g: uint8_t,
@@ -52,12 +55,14 @@ pub mod ll {
         pub unused: uint8_t
     }
 
+    #[repr(C)]
     pub struct SDL_Palette {
         pub ncolors: c_int,
         pub colors: *mut SDL_Color,
     }
 
-    #[allow(uppercase_variables)]
+    #[allow(non_snake_case)]
+    #[repr(C)]
     pub struct SDL_PixelFormat {
         pub palette: *mut SDL_Palette,
         pub BitsPerPixel: uint8_t,
@@ -78,6 +83,7 @@ pub mod ll {
         pub alpha: uint8_t,
     }
 
+    #[repr(C)]
     pub struct SDL_VideoInfo {
         pub flags: uint32_t,        // actually a set of packed fields
         pub video_mem: uint32_t,
@@ -263,7 +269,7 @@ fn wrap_pixel_format(raw: *mut ll::SDL_PixelFormat) -> PixelFormat {
 fn unwrap_pixel_format(fmt: &PixelFormat) -> ll::SDL_PixelFormat {
     ll::SDL_PixelFormat {
         palette: match fmt.palette {
-            None => ptr::mut_null(),
+            None => ptr::null_mut(),
             Some(palette) => palette.raw
         },
         BitsPerPixel: fmt.bpp,
@@ -658,10 +664,10 @@ impl Surface {
         unsafe {
             ll::SDL_UpperBlit(src.raw, match src_rect {
                 Some(ref rect) => mem::transmute(rect),
-                None => ptr::mut_null()
+                None => ptr::null_mut()
             }, self.raw, match dest_rect {
                 Some(ref rect) => mem::transmute(rect),
-                None => ptr::mut_null()
+                None => ptr::null_mut()
             }) == 0
         }
     }
@@ -685,7 +691,7 @@ impl Surface {
                      color: Color) -> bool {
         unsafe { ll::SDL_FillRect(self.raw, match rect {
             Some(ref rect) => mem::transmute(rect),
-            None => ptr::mut_null()
+            None => ptr::null_mut()
         }, color.to_mapped((*self.raw).format as *const _)) == 0 }
     }
 

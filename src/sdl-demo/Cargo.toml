@@ -1,0 +1,12 @@
+[package]
+
+name = "sdl-demo"
+version = "0.3.4"
+authors = [ "brson" ]
+
+[[bin]]
+name = "sdl-demo"
+path = "main.rs"
+
+[dependencies.sdl]
+path = "../.."
